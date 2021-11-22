@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  mockapp:
+    build:
+      context: ./mockapp
+    ports:
+      - 8081:8080
+
+  mqtt_server:
+    image: eclipse-mosquitto
+    ports:
+      - 9883:1883
+      - 10001:9001
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+
+volumes:
+  mosquitto_data:
+  mosquitto_logs:

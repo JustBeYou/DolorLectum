@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: mockapp
+  version: v1
+servers:
+- url: /
+paths:
+  /echo/{message}:
+    description: Echo back some message!
+    get:
+      description: The damn message will be echoed
+      parameters:
+      - explode: false
+        in: path
+        name: message
+        required: true
+        schema:
+          example: hello, world!
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            plain/text:
+              schema:
+                example: hello, world!
+                type: string
+          description: The good one
+components:
+  schemas: {}
