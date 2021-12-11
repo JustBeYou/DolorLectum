@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  description: Relax and move your TV instead of moving yourself.
+  title: TV Movement
+  version: 1.0.0
+externalDocs:
+  description: Find out more about DolorLectum
+  url: https://github.com/JustBeYou/DolorLectum
+servers:
+- url: /
+paths:
+  /position:
+    get:
+      operationId: get_position
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+          description: OK
+        "409":
+          content:
+            application/json:
+              example:
+                code: 409
+                message: Position is not disponible.
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Position is not disponible.
+      summary: Get position of TV.
+      tags:
+      - Position
+      x-openapi-router-controller: openapi_server.controllers.position_controller
+    post:
+      operationId: set_position
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Position'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+          description: OK
+        "400":
+          content:
+            application/json:
+              example:
+                detail: -1 is less than the minimum of 0 -'z'
+                status: 400
+                title: Bad Request
+                type: about:blank
+              schema:
+                $ref: '#/components/schemas/Error400'
+          description: Invalid request.
+        "409":
+          content:
+            application/json:
+              example:
+                code: 409
+                message: Can't move while status is not ready.
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Violate state.
+      summary: Set position of TV.
+      tags:
+      - Position
+      x-openapi-router-controller: openapi_server.controllers.position_controller
+  /status:
+    get:
+      operationId: get_status
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: OK
+      summary: Get current status of TV position.
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+    post:
+      operationId: set_status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+          description: OK
+        "409":
+          content:
+            application/json:
+              example:
+                code: 409
+                message: Status is alredy set to intended state.
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status is alredy set to intended state.
+      summary: Set status of TV position.
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+components:
+  schemas:
+    Error:
+      properties:
+        code:
+          title: code
+          type: string
+        message:
+          title: message
+          type: string
+      required:
+      - code
+      - message
+      title: Error
+      type: object
+    Error400:
+      properties:
+        detail:
+          title: detail
+          type: string
+        status:
+          title: status
+          type: integer
+        title:
+          title: title
+          type: string
+        type:
+          title: type
+          type: string
+      required:
+      - detail
+      - status
+      - title
+      - type
+      title: Error400
+      type: object
+    Status:
+      example:
+        ready: true
+      properties:
+        ready:
+          title: ready
+          type: boolean
+      required:
+      - ready
+      title: Status
+      type: object
+    Position:
+      example:
+        x: -41
+        y: 10
+        z: 7
+      properties:
+        x:
+          maximum: 50
+          minimum: -50
+          title: x
+          type: integer
+        y:
+          maximum: 50
+          minimum: -50
+          title: "y"
+          type: integer
+        z:
+          maximum: 50
+          minimum: 0
+          title: z
+          type: integer
+      title: Position
+      type: object
+    inline_response_200:
+      example:
+        data:
+          ready: true
+      properties:
+        data:
+          $ref: '#/components/schemas/Status'
+      title: inline_response_200
+      type: object
+    inline_response_200_1:
+      example:
+        data:
+          x: -41
+          y: 10
+          z: 7
+      properties:
+        data:
+          $ref: '#/components/schemas/Position'
+      title: inline_response_200_1
+      type: object

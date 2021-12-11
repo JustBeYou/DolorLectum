@@ -1,0 +1,148 @@
+openapi: 3.0.0
+info:
+  title: TV Movement
+  description: Relax and move your TV instead of moving yourself.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about DolorLectum
+  url: https://github.com/JustBeYou/DolorLectum
+servers:
+- url: /
+paths:
+  /status:
+    get:
+      operationId: get_status
+      tags: ["Status"]
+      summary: Get current status of TV position. 
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+    post:
+      operationId: set_status
+      tags: ["Status"]
+      summary: Set status of TV position. 
+      requestBody:
+        content:
+          application/json:
+            schema:      
+              $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    $ref: '#/components/schemas/Status'
+        "409":
+          description: Status is alredy set to intended state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 409
+                message: Status is alredy set to intended state.
+     
+  /position:
+    get:
+      operationId: get_position
+      tags: ["Position"]
+      summary: Get position of TV.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+        "409":
+          description: Position is not disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 409
+                message: Position is not disponible.
+    post:
+      operationId: set_position
+      tags: ["Position"]
+      summary: Set position of TV.
+      requestBody:
+        content:
+          application/json:
+            schema:      
+              $ref: '#/components/schemas/Position'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data: 
+                    $ref: '#/components/schemas/Position'
+        "406":
+          description: Invalid request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 406
+                message: One param does not meet requirements.
+        "409":
+          description: Violate state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: 409
+                message: Can't move while status is not ready.
+  
+  
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+        
+    Status:
+      type: object
+      properties:
+        ready:
+          type: boolean
+      required:
+        - ready
+    
+    Position:
+      type: object
+      properties:
+        x:
+          type: integer
+          minimum: -50
+          maximum: 50
+        y:
+          type: integer
+          minimum: -50
+          maximum: 50
+        z: 
+          type: integer
+          minimum: 0
+          maximum: 50
