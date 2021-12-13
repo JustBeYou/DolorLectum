@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  description: El vacuum that cleans el mattress
+  title: Mattress Vacuum
+  version: 1.0.0
+externalDocs:
+  description: Find out more about DolorLectum
+  url: https://github.com/JustBeYou/DolorLectum
+servers:
+- url: /
+paths:
+  /status:
+    get:
+      operationId: get_mattress_status
+      responses:
+        "200":
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Status'
+          description: Get the status
+        "405":
+          description: No history available
+      summary: Get El status
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+    post:
+      operationId: set_mattress_status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: Stat set successful
+        "405":
+          description: Invalid input
+      summary: Set El status
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+  /action:
+    post:
+      operationId: clean_mattress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Action'
+      responses:
+        "200":
+          content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Action'
+          description: Very clean, so good
+        "405":
+          description: Invalid input
+        "409":
+          description: Cannot act when state is not ready
+      summary: Action upon the cleaner
+      tags:
+      - Action
+      x-openapi-router-controller: openapi_server.controllers.action_controller
+components:
+  schemas:
+    Status:
+      example:
+        ready: true
+      properties:
+        ready:
+          title: ready
+          type: boolean
+      required:
+      - ready
+      title: Status
+      type: object
+    Action:
+      example:
+        action: cancel
+      properties:
+        action:
+          title: "action"
+          type: string
+          enum: [clean, cancel]
+      title: Action
+      type: object
