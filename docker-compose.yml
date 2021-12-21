@@ -6,8 +6,18 @@ services:
       context: ./mockapp
     ports:
       - 8081:8080
+    networks:
+      - dolorlectum
 
-  mqtt_server:
+  collector:
+    build:
+      context: ./collector
+    depends_on:
+      - "mqtt-server"
+    networks:
+      - dolorlectum
+
+  mqtt-server:
     image: eclipse-mosquitto
     ports:
       - 9883:1883
@@ -16,7 +26,12 @@ services:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
       - mosquitto_data:/mosquitto/data
       - mosquitto_logs:/mosquitto/log
+    networks:
+      - dolorlectum
 
 volumes:
   mosquitto_data:
   mosquitto_logs:
+
+networks:
+  dolorlectum:
