@@ -15,42 +15,52 @@ const IdleStatus = "idle"
 const PlayingStatus = "playing"
 const PausedStatus = "paused"
 
-var storedSongs = make(map[string]models.StoredSong)
-var playingQueue = make([]string, 0)
-var status = IdleStatus
-var currentSecond = 0
+func (c *Container) SetSleepTime(milliseconds int32) {
+	c.sleepTimeMilliseconds = milliseconds
+}
 
-func BackgroundJob() {
-	for {
-		time.Sleep(5 * time.Second)
+func SeedPrng(seed int64) {
+	rand.Seed(seed)
+}
 
-		if status != PlayingStatus {
-			continue
-		}
+func (c *Container) BackgroundJob() {
+	for !c.shouldStop {
+		time.Sleep(time.Duration(c.sleepTimeMilliseconds) * time.Millisecond)
+		c.PlaySong()
+	}
+}
 
-		if len(playingQueue) == 0 {
-			status = IdleStatus
-			currentSecond = 0
-			continue
-		}
+func (c *Container) PlaySong() {
+	if c.status != PlayingStatus {
+		return
+	}
 
-		currentSecond += 5
-		if currentSecond >= int(storedSongs[playingQueue[0]].Length) {
-			fmt.Println("Song finished ", storedSongs[playingQueue[0]].Name)
-			playingQueue = playingQueue[1:]
-			currentSecond = 0
-		} else {
-			fmt.Printf("%d/%d song %s\n", currentSecond, int(storedSongs[playingQueue[0]].Length),
-				storedSongs[playingQueue[0]].Name)
-		}
+	if len(c.playingQueue) == 0 {
+		c.status = IdleStatus
+		c.currentSecond = 0
+		return
+	}
+
+	x := int(c.sleepTimeMilliseconds) / int(time.Millisecond)
+	if x == 0 {
+		x = 1
+	}
+	c.currentSecond += x
+	if c.currentSecond >= int(c.storedSongs[c.playingQueue[0]].Length) {
+		fmt.Println("Song finished ", c.storedSongs[c.playingQueue[0]].Name)
+		c.playingQueue = c.playingQueue[1:]
+		c.currentSecond = 0
+	} else {
+		fmt.Printf("%d/%d song %s\n", c.currentSecond, int(c.storedSongs[c.playingQueue[0]].Length),
+			c.storedSongs[c.playingQueue[0]].Name)
 	}
 }
 
 // SongsGet -
 func (c *Container) SongsGet(ctx echo.Context) error {
-	songs := make([]models.StoredSong, len(playingQueue))
-	for i, id := range playingQueue {
-		songs[i] = storedSongs[id]
+	songs := make([]models.StoredSong, len(c.playingQueue))
+	for i, id := range c.playingQueue {
+		songs[i] = c.storedSongs[id]
 	}
 
 	return ctx.JSON(http.StatusOK, songs)
@@ -58,12 +68,12 @@ func (c *Container) SongsGet(ctx echo.Context) error {
 
 // SongsIDelete -
 func (c *Container) SongsIDelete(ctx echo.Context) error {
-	i, err := getIndexParam(ctx)
+	i, err := getIndexParam(ctx, c.playingQueue)
 	if err != nil {
-		return err
+		return nil
 	}
 
-	playingQueue = append(playingQueue[:i], playingQueue[i+1:]...)
+	c.playingQueue = append(c.playingQueue[:i], c.playingQueue[i+1:]...)
 	return ctx.JSON(http.StatusOK, models.Message{
 		Message: "Deleted",
 	})
@@ -71,12 +81,12 @@ func (c *Container) SongsIDelete(ctx echo.Context) error {
 
 // SongsIGet -
 func (c *Container) SongsIGet(ctx echo.Context) error {
-	i, err := getIndexParam(ctx)
+	i, err := getIndexParam(ctx, c.playingQueue)
 	if err != nil {
-		return err
+		return nil
 	}
 
-	return ctx.JSON(http.StatusOK, storedSongs[playingQueue[i]])
+	return ctx.JSON(http.StatusOK, c.storedSongs[c.playingQueue[i]])
 }
 
 // SongsPost -
@@ -84,22 +94,24 @@ func (c *Container) SongsPost(ctx echo.Context) error {
 	obj := new(models.InlineObject)
 	err := getReqBodyInto(ctx, obj)
 	if err != nil {
-		return err
+		return nil
 	}
 
-	song, exists := storedSongs[obj.Id]
+	song, exists := c.storedSongs[obj.Id]
 	if !exists || song.Size == 0 {
-		return ctx.JSON(http.StatusNotFound, "Song not found in storage")
+		return ctx.JSON(http.StatusNotFound, models.Message{
+			Message: "Song not found in storage",
+		})
 	}
 
-	playingQueue = append(playingQueue, song.Id)
+	c.playingQueue = append(c.playingQueue, song.Id)
 	qsong := models.QueuedSong{
 		Name:   song.Name,
 		Format: song.Format,
 		Id:     song.Id,
 		Length: song.Length,
 		Size:   song.Size,
-		Index:  int32(len(playingQueue) - 1),
+		Index:  int32(len(c.playingQueue) - 1),
 	}
 
 	return ctx.JSON(http.StatusOK, qsong)
@@ -108,21 +120,21 @@ func (c *Container) SongsPost(ctx echo.Context) error {
 // StatusGet -
 func (c *Container) StatusGet(ctx echo.Context) error {
 	var qsong models.QueuedSong
-	if len(playingQueue) > 0 {
-		song := storedSongs[playingQueue[0]]
+	if len(c.playingQueue) > 0 {
+		song := c.storedSongs[c.playingQueue[0]]
 		qsong = models.QueuedSong{
 			Name:   song.Name,
 			Format: song.Format,
 			Id:     song.Id,
 			Length: song.Length,
 			Size:   song.Size,
-			Index:  int32(len(playingQueue) - 1),
+			Index:  int32(len(c.playingQueue) - 1),
 		}
 	}
 
 	return ctx.JSON(http.StatusOK, models.Status{
-		Status:        status,
-		CurrentSecond: int32(currentSecond),
+		Status:        c.status,
+		CurrentSecond: int32(c.currentSecond),
 		CurrentSong:   qsong,
 	})
 }
@@ -132,20 +144,20 @@ func (c *Container) StatusPost(ctx echo.Context) error {
 	obj := new(models.InlineObject1)
 	err := getReqBodyInto(ctx, obj)
 	if err != nil {
-		return err
+		return nil
 	}
 
-	if obj.Status == PlayingStatus && len(playingQueue) == 0 {
+	if obj.Status == PlayingStatus && len(c.playingQueue) == 0 {
 		return ctx.JSON(http.StatusBadRequest, models.Message{
 			Message: "Can't start playing, the queue is empty",
 		})
 	}
 
-	status = obj.Status
+	c.status = obj.Status
 
 	if obj.Status == IdleStatus {
-		playingQueue = make([]string, 0)
-		currentSecond = 0
+		c.playingQueue = make([]string, 0)
+		c.currentSecond = 0
 	}
 
 	return c.StatusGet(ctx)
@@ -153,9 +165,9 @@ func (c *Container) StatusPost(ctx echo.Context) error {
 
 // StorageGet -
 func (c *Container) StorageGet(ctx echo.Context) error {
-	songs := make([]models.StoredSong, len(storedSongs))
+	songs := make([]models.StoredSong, len(c.storedSongs))
 	i := 0
-	for _, v := range storedSongs {
+	for _, v := range c.storedSongs {
 		songs[i] = v
 		i++
 	}
@@ -173,7 +185,7 @@ func (c *Container) StorageIdDelete(ctx echo.Context) error {
 // StorageIdGet -
 func (c *Container) StorageIdGet(ctx echo.Context) error {
 	id := ctx.Param("id")
-	song, exists := storedSongs[id]
+	song, exists := c.storedSongs[id]
 	if !exists {
 		return ctx.JSON(http.StatusNotFound, models.Message{
 			Message: "Song id not found in storage",
@@ -186,7 +198,7 @@ func (c *Container) StorageIdGet(ctx echo.Context) error {
 // StorageIdPut -
 func (c *Container) StorageIdPut(ctx echo.Context) error {
 	id := ctx.Param("id")
-	song, exists := storedSongs[id]
+	song, exists := c.storedSongs[id]
 	if !exists {
 		return ctx.JSON(http.StatusNotFound, models.Message{
 			Message: "Song id not found in storage",
@@ -196,9 +208,9 @@ func (c *Container) StorageIdPut(ctx echo.Context) error {
 	// Fake implementation
 	song.Size = rand.Float32() * 100
 	song.Length = rand.Int31()%200 + 1
-	storedSongs[id] = song
+	c.storedSongs[id] = song
 
-	return ctx.JSON(http.StatusOK, storedSongs[id])
+	return ctx.JSON(http.StatusOK, c.storedSongs[id])
 }
 
 // StoragePost -
@@ -206,11 +218,11 @@ func (c *Container) StoragePost(ctx echo.Context) error {
 	obj := new(models.BaseSong)
 	err := getReqBodyInto(ctx, obj)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	id := strconv.Itoa(rand.Int())
-	storedSongs[id] = models.StoredSong{
+	c.storedSongs[id] = models.StoredSong{
 		Name:   obj.Name,
 		Format: obj.Format,
 		Id:     id,
@@ -218,10 +230,10 @@ func (c *Container) StoragePost(ctx echo.Context) error {
 		Size:   0,
 	}
 
-	return ctx.JSON(http.StatusOK, storedSongs[id])
+	return ctx.JSON(http.StatusOK, c.storedSongs[id])
 }
 
-func getIndexParam(ctx echo.Context) (int, error) {
+func getIndexParam(ctx echo.Context, playingQueue []string) (int, error) {
 	i, err0 := strconv.Atoi(ctx.Param("i"))
 
 	if err0 != nil {
@@ -250,8 +262,9 @@ func getIndexParam(ctx echo.Context) (int, error) {
 func getReqBodyInto(ctx echo.Context, obj interface{}) error {
 	err0 := ctx.Bind(obj)
 	if err0 != nil {
-		fmt.Println("Invalid body format ", err0)
-		err := ctx.JSON(http.StatusBadRequest, "Invalid body format")
+		err := ctx.JSON(http.StatusBadRequest, models.Message{
+			Message: "Invalid body format",
+		})
 		if err != nil {
 			return err
 		}
