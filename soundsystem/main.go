@@ -49,7 +49,7 @@ func main() {
 	// StoragePost -
 	e.POST("/storage", c.StoragePost)
 
-	go handlers.BackgroundJob()
+	go c.BackgroundJob()
 
 	// Start server
 	e.Logger.Fatal(e.Start(":8080"))
