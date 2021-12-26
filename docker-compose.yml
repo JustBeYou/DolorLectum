@@ -8,7 +8,13 @@ services:
       - 8081:8080
     networks:
       - dolorlectum
-
+  lamp:
+    build:
+      context: ./lamp
+    ports:
+      - 8084:8085
+    networks:
+      - dolorlectum
   collector:
     build:
       context: ./collector

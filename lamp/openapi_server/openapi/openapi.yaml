@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  description: el lamp
+  title: lamp
+  version: 1.0.0
+externalDocs:
+  description: Find out more about DolorLectum
+  url: https://github.com/JustBeYou/DolorLectum
+servers:
+- url: /
+paths:
+  /color:
+    post:
+      operationId: set_color
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: Color set successful
+        "405":
+          description: Invalid input
+      summary: Set the light
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+  /status:
+    get:
+      operationId: get_lamp_state
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Get the status
+        "405":
+          description: status
+      summary: Get the status
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+    post:
+      operationId: set_light_status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Stat set successful
+        "405":
+          description: Invalid input
+      summary: Set the status
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+components:
+  schemas:
+    Status:
+      example:
+        status: full_power
+        red: 255
+        green: 255
+        blue: 255
+      properties:
+        power:
+          enum:
+          - full_power
+          - normal_power
+          - power_saving
+          - "false"
+          title: power
+          type: string
+        red:
+          title: red
+          type: number
+        green:
+          title: green
+          type: number
+        blue:
+          title: blue
+          type: number
+      title: Status
+      type: object
