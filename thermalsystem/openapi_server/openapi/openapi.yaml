@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  description: El system that hace calor el mattress
+  title: THermal System
+  version: 1.0.1
+externalDocs:
+  description: Find out more about DolorLectum
+  url: https://github.com/JustBeYou/DolorLectum
+servers:
+- url: /
+paths:
+  /action:
+    post:
+      operationId: work
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Action'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+          description: Very HOT, so good
+        "405":
+          description: Invalid input
+        "409":
+          description: Cannot act when state is not ready
+      summary: Action upon the thermal system
+      tags:
+      - Action
+      x-openapi-router-controller: openapi_server.controllers.action_controller
+  /status:
+    get:
+      operationId: get_thermal_status
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: Get the status
+        "405":
+          description: No history available
+      summary: Get El status
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+    post:
+      operationId: set_thermal_status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: Stat set successful
+        "405":
+          description: Invalid input
+      summary: Set El status
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+  /temp:
+    post:
+      operationId: set_temperature
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        "200":
+          description: Temp set successful
+        "405":
+          description: Invalid input
+      summary: Set El temperatura
+      tags:
+      - Status
+      x-openapi-router-controller: openapi_server.controllers.status_controller
+components:
+  schemas:
+    Status:
+      example:
+        ready: true
+      properties:
+        ready:
+          title: ready
+          type: boolean
+        temp:
+          title: temp
+          type: number
+        realtemp:
+          title: realtemp
+          type: number
+      title: Status
+      type: object
+    Action:
+      example:
+        action: cancel
+      properties:
+        action:
+          enum:
+          - work
+          - cancel
+          title: action
+          type: string
+      title: Action
+      type: object
