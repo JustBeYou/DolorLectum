@@ -8,6 +8,15 @@ services:
       - 8081:8080
     networks:
       - dolorlectum
+  soundsystem:
+    build:
+      context: ./soundsystem
+    ports:
+      - 8083:8080
+    networks:
+      - dolorlectum
+    depends_on:
+      - "mqtt-server"
   lamp:
     build:
       context: ./lamp

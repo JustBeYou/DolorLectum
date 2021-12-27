@@ -178,6 +178,10 @@ func TestStatus(t *testing.T) {
 	SeedPrng(seed)
 	c, _ := NewContainer()
 
+	c.InitMQTTClient("localhost", 9883)
+	c.ConnectMQTTClient()
+	c.SubscribeToSongsQueue()
+
 	tc := TestCase{
 		path:            "/status",
 		method:          http.MethodGet,
@@ -270,6 +274,10 @@ func TestStatus(t *testing.T) {
 		function:        c.StatusGet,
 	}
 	testRequest(t, tc)
+
+	c.mqttClient.Publish("soundsystem.songs.queue", 0, false, "invalid")
+	c.mqttClient.Publish("soundsystem.songs.queue", 0, false, "{\"id\":\"not found\"}")
+	c.mqttClient.Publish("soundsystem.songs.queue", 0, false, "{\"id\":\"3440579354231278675\"}")
 }
 
 func TestOthers(t *testing.T) {

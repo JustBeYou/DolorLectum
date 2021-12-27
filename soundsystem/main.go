@@ -4,6 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"soundsystem/handlers"
+	"sync"
 )
 
 func main() {
@@ -49,8 +50,31 @@ func main() {
 	// StoragePost -
 	e.POST("/storage", c.StoragePost)
 
-	go c.BackgroundJob()
+	wg := sync.WaitGroup{}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		c.BackgroundJob()
+	}()
 
 	// Start server
-	e.Logger.Fatal(e.Start(":8080"))
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		e.Logger.Fatal(e.Start(":8080"))
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		c.InitMQTTClient("mqtt-server", 1883)
+		c.ConnectMQTTClient()
+		c.SubscribeToSongsQueue()
+	}()
+
+	wg.Wait()
 }

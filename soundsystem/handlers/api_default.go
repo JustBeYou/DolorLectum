@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/labstack/echo/v4"
 	"math/rand"
 	"net/http"
@@ -38,6 +40,7 @@ func (c *Container) PlaySong() {
 	if len(c.playingQueue) == 0 {
 		c.status = IdleStatus
 		c.currentSecond = 0
+		c.PublishStatus()
 		return
 	}
 
@@ -54,6 +57,7 @@ func (c *Container) PlaySong() {
 		fmt.Printf("%d/%d song %s\n", c.currentSecond, int(c.storedSongs[c.playingQueue[0]].Length),
 			c.storedSongs[c.playingQueue[0]].Name)
 	}
+	c.PublishStatus()
 }
 
 // SongsGet -
@@ -91,7 +95,7 @@ func (c *Container) SongsIGet(ctx echo.Context) error {
 
 // SongsPost -
 func (c *Container) SongsPost(ctx echo.Context) error {
-	obj := new(models.InlineObject)
+	obj := new(models.SongRequest)
 	err := getReqBodyInto(ctx, obj)
 	if err != nil {
 		return nil
@@ -117,8 +121,7 @@ func (c *Container) SongsPost(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, qsong)
 }
 
-// StatusGet -
-func (c *Container) StatusGet(ctx echo.Context) error {
+func (c *Container) createStatusStruct() models.Status {
 	var qsong models.QueuedSong
 	if len(c.playingQueue) > 0 {
 		song := c.storedSongs[c.playingQueue[0]]
@@ -132,11 +135,16 @@ func (c *Container) StatusGet(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, models.Status{
+	return models.Status{
 		Status:        c.status,
 		CurrentSecond: int32(c.currentSecond),
 		CurrentSong:   qsong,
-	})
+	}
+}
+
+// StatusGet -
+func (c *Container) StatusGet(ctx echo.Context) error {
+	return ctx.JSON(http.StatusOK, c.createStatusStruct())
 }
 
 // StatusPost -
@@ -160,6 +168,7 @@ func (c *Container) StatusPost(ctx echo.Context) error {
 		c.currentSecond = 0
 	}
 
+	c.PublishStatus()
 	return c.StatusGet(ctx)
 }
 
@@ -231,6 +240,53 @@ func (c *Container) StoragePost(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, c.storedSongs[id])
+}
+
+func (c *Container) ConnectMQTTClient() {
+	if token := c.mqttClient.Connect(); token.Wait() && token.Error() != nil {
+		panic(token.Error())
+	}
+}
+
+func (c *Container) SubscribeToSongsQueue() {
+	topic := "soundsystem.songs.queue"
+	token := c.mqttClient.Subscribe(topic, 1, func(client mqtt.Client, message mqtt.Message) {
+		sr := models.SongRequest{}
+		err := json.Unmarshal(message.Payload(), &sr)
+		if err != nil {
+			fmt.Printf("Invalid message format for song request: %s\n", message.Payload())
+			return
+		}
+
+		fmt.Printf("Received song request %s\n", sr.Id)
+
+		song, exists := c.storedSongs[sr.Id]
+		if !exists || song.Size == 0 {
+			fmt.Printf("Requested song %s not found\n", sr.Id)
+			return
+		}
+
+		c.playingQueue = append(c.playingQueue, song.Id)
+		c.PublishStatus()
+	})
+	token.Wait()
+	fmt.Printf("Subscribed to topic %s\n", topic)
+}
+
+func (c *Container) PublishStatus() {
+	status := c.createStatusStruct()
+	bytes, err := json.Marshal(status)
+	if err != nil {
+		fmt.Println("Could not publish status")
+		return
+	}
+
+	if c.mqttClient == nil {
+		fmt.Println("MQTT not connected, ignoring status publishing")
+		return
+	}
+
+	c.mqttClient.Publish("soundsystem.status", 0, false, bytes)
 }
 
 func getIndexParam(ctx echo.Context, playingQueue []string) (int, error) {
