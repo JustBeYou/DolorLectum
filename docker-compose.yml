@@ -1,13 +1,27 @@
 version: '3'
 
 services:
-  mockapp:
+  mattress_vacuum:
     build:
-      context: ./mockapp
+      context: ./mattress_vacuum
     ports:
       - 8081:8080
     networks:
       - dolorlectum
+    depends_on:
+      - "mqtt-server"
+
+  thermalsystem:
+    build:
+      context: ./thermalsystem
+    ports:
+      - 8082:8080
+    networks:
+      - dolorlectum
+    depends_on:
+      - "mqtt-server"
+
+
   soundsystem:
     build:
       context: ./soundsystem
@@ -17,6 +31,7 @@ services:
       - dolorlectum
     depends_on:
       - "mqtt-server"
+
   lamp:
     build:
       context: ./lamp
@@ -24,6 +39,19 @@ services:
       - 8084:8085
     networks:
       - dolorlectum
+    depends_on:
+      - "mqtt-server"
+
+  tv-movement:
+    build:
+      context: ./tv-movement
+    ports:
+      - 8085:8080
+    networks:
+      - dolorlectum
+    depends_on:
+      - "mqtt-server"
+
   collector:
     build:
       context: ./collector
