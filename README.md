@@ -1,40 +1,20 @@
 # DolorLectum
 Langua rumena est mucho smecherosa.
 
+DolorLectum este o suita de dispozitive (mock) ce stau in componenta unui pat inteligent. Dispozitivele sunt cele ce urmeaza:
+- sistem de sunet programabil
+- mecanisme pentru pozitionarea televizorului incorporat
+- aspirator inteligent pentru saltea
+- termostat inteligent
+- lampa inteligenta
+
+DolorLectum este livrat impreuna cu o interfata web ce usureaza interactionarea cu dispozitivele.
+
 ## Cum pornesc proiectul?
-`docker-compose up` va porni toate aplicatiile.
+`docker-compose up` va porni toate aplicatiile, toate in aceasi retea. Interfata web se afla la adresa http://localhost:3000.
 
-## Cum adaug o aplicatie?
+## Manual de utilizare functionalitati
 
-Vom folosi ca exemplu `mockapp`, scrisa in `go`.
+In paragrafele de mai jos vor fi descrise functionalitatile dispozitivelor si cum pot fi acestea utilizate pentru o experienta de neuitat cu DolorLectum.
 
-1. Creezi un folder pentru aplicatia ta (ex. `mockapp`)
-2. Pui specificatia openapi in `mockapp/openapi.yaml`
-3. Folosesti OpenAPI-generator ca sa generezi boilerplate-ul aplicatiei:
-```
-java -jar openapi-generator-cli.jar generate \
--i ./mockapp/openapi.yaml # sursa specificatiei
--g go-gin-server          # ce generator sa foloseasca*
--o mockapp                # destinatia boilerplate-ului generat
-
-#* pentru o lista a generatoarelor ruleaza:
-# java -jar openapi-generator-cli.jar list
-```
-4. Daca boilerplate-ul generat nu are un Dockerfile, creeaza unul 
-(ex. `mockapp/Dockerfile`)
-5. Adauga aplicatia ta in serviciile din docker-compose, exemplu:
-```
-services:
-  mockapp:
-    build:
-      context: ./mockapp # locatia imaginii de docker
-    ports:
-      - 8081:8080 # expune portul 8080 intern spre 8081 extern
-
-    # ... alte chestii ...
-```
-
-Dupa ce pornesti proiectul, `mockapp` (sau aplicatia ta) va fi disponibila
-la portul extern specificat, anume 8081.
-
-Informatii despre OpenAPI-generator: https://github.com/OpenAPITools/openapi-generator
+**TODO**: n-am nici cea mai mica idee ce putem scrie aici. Banuiesc ca putem sa zicem ce stie sa faca fiecare dispozitiv si sa punem poze din frontend.
