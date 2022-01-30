@@ -5,8 +5,8 @@ from openapi_server import util
 import json
 import sys
 
-sys.path.append("../../")
-from __main__ import push
+
+from ..__main__ import push
 
 
 def get_thermal_status():  # noqa: E501
