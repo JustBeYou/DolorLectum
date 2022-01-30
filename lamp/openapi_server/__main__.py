@@ -3,6 +3,7 @@
 import connexion
 
 from openapi_server import encoder
+from flask_cors import CORS
 
 
 def main():
@@ -12,6 +13,7 @@ def main():
                 arguments={'title': 'lamp'},
                 pythonic_params=True)
 
+    CORS(app.app)
     app.run(port=8085)
 
 
