@@ -71,6 +71,22 @@ services:
       - mosquitto_logs:/mosquitto/log
     networks:
       - dolorlectum
+      
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/frontend
+    networks:
+      - dolorlectum
+    depends_on:
+      - tv-movement
+      - lamp
+      - soundsystem
+      - thermalsystem
+      - mattress_vacuum
 
 volumes:
   mosquitto_data:
