@@ -35,8 +35,7 @@ const HomePage = () => {
   const styles = useStyles();
   return (
     <PageTemplate>
-      <Box sx={{ height: 50 }}></Box>
-      <Typography align="center" variant="h1">
+      <Typography align="center" variant="h1" sx={{ marginTop: 5 }}>
         Dolor<span style={{ color: '#7ad4f5' }}>Lectum</span>
       </Typography>
       <ColumnCenteredBox className={styles.menuBox}>

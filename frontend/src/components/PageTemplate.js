@@ -5,12 +5,14 @@ const useStyles = makeStyles({
   pageWrapper: {
     height: '100vh',
     backgroundColor: 'brown',
+    display: 'flex',
+    flexDirection: 'column',
   },
 });
 
-const HomePage = ({ children }) => {
+const PageTemplate = ({ children }) => {
   const styles = useStyles();
   return <Box className={styles.pageWrapper}>{children}</Box>;
 };
 
-export default HomePage;
+export default PageTemplate;
