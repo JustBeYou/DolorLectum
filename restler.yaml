@@ -1,0 +1,10 @@
+  restler:
+    privileged: true
+    build:
+      context: ./restler
+    networks:
+      - dolorlectum
+    volumes:
+      - ./lamp:/target
+    depends_on:
+      - lamp
