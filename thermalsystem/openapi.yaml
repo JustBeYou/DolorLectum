@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  description: El system that hace calor el mattress
-  title: THermal System
+  description: The system that regulates the heat of the matress
+  title: Thermal System
   version: 1.0.1
 externalDocs:
   description: Find out more about DolorLectum
@@ -19,9 +19,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: Get the status
-        "405":
-          description: No history available
-      summary: Get El status
+      summary: Get the status
       tags:
       - Status
       x-openapi-router-controller: openapi_server.controllers.status_controller
@@ -34,10 +32,8 @@ paths:
               $ref: '#/components/schemas/Status'
       responses:
         "200":
-          description: Stat set successful
-        "405":
-          description: Invalid input
-      summary: Set El status
+          description: Status set successful
+      summary: Set status
       tags:
       - Status
       x-openapi-router-controller: openapi_server.controllers.status_controller
@@ -52,9 +48,7 @@ paths:
       responses:
         "200":
           description: Temp set successful
-        "405":
-          description: Invalid input
-      summary: Set El temperatura
+      summary: Set the temperature
       tags:
       - Status
       x-openapi-router-controller: openapi_server.controllers.status_controller
@@ -74,11 +68,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Action'
-          description: Very HOT, so good
-        "405":
-          description: Invalid input
-        "409":
-          description: Cannot act when state is not ready
+          description: The action that regulates the thermal system
       summary: Action upon the thermal system
       tags:
       - Action

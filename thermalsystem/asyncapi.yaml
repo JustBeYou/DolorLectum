@@ -1,0 +1,120 @@
+asyncapi: '2.2.0'
+info:
+  title: Thermal System AsyncAPI
+  version: '1.0.0'
+
+servers:
+  test:
+    url: localhost:8095
+    protocol: mqtt
+    bindings:
+      $ref: '#/components/operationTraits/mqtt'
+
+defaultContentType: application/json
+
+channels:
+  thermalsystem.status.updates:
+    publish:
+      summary: The status updates of the thermal system are published here.
+      operationId: publishStatusUpdate
+      message:
+        $ref: '#/components/messages/statusUpdate'
+
+  thermalsystem.temperature:
+    subscribe:
+      summary: Request new temperature temperature.
+      operationId: subscribeNewTemperature
+      message:
+        $ref: '#/components/messages/temperature'
+
+components:
+  messages:
+    statusUpdate:
+      payload:
+        $ref: '#/components/schemas/status'
+
+    temperature:
+      payload:
+        type: object
+        required:
+          - temperature
+        properties:
+          temperature:
+            type:number 
+        example:
+          temperature: 26.7
+
+  schemas:
+    base_song:
+      type: object
+      properties:
+        name:
+          type: string
+
+        format:
+          type: string
+      required: 
+        - name
+        - format
+      example: 
+        name: The house of the Rising Sun
+        format: mp3
+        
+    stored_song:
+      allOf:
+        - $ref: '#/components/schemas/base_song'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            length:
+              type: integer
+              format: seconds
+            size:
+              type: number
+              format: MiB
+          example:
+            id: 123e4567-e89b-12d3-a456-426614174000
+            length: 249
+            size: 1.5
+    
+    queued_song:
+      allOf:
+        - $ref: '#/components/schemas/stored_song'
+        - type: object
+          properties:
+            index:
+              type: integer
+          example:
+            index: 5
+        
+    message:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: More details about it
+        
+    Status:
+      example:
+        ready: true
+      properties:
+        ready:
+          title: ready
+          type: boolean
+        temp:
+          title: temp
+          type: number
+        realtemp:
+          title: realtemp
+          type: number
+      title: Status
+      type: object
+
+  operationTraits:
+    mqtt:
+      bindings:
+        mqtt:
+          clientId: thermalsystem
