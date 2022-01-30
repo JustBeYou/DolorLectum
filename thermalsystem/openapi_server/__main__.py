@@ -33,6 +33,16 @@ def on_message(client, userdata, msg):
 
 
 def main():
+    app = create_app()
+    global client
+    client.on_connect = on_connect
+    client.on_message=on_message
+    client.connect_async('mqtt-server',1883)
+    client.loop_start()
+    app.run(port=8080)
+
+
+def create_app():
     app = connexion.App(__name__, specification_dir="./openapi/")
     app.app.json_encoder = encoder.JSONEncoder
     app.add_api(
@@ -41,15 +51,7 @@ def main():
     with open("state", "w") as f:
         obj = {"ready": True, "temp": 24, "realtemp": 26}
         f.write(json.dumps(obj))
-    
-    global client
-    client.on_connect = on_connect
-    client.on_message=on_message
-    client.connect_async('mqtt-server',1883)
-    client.loop_start()
-    app.run(port=8080)
-    
-    
+    return app
 
 
 if __name__ == "__main__":
