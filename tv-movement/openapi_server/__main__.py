@@ -3,7 +3,7 @@
 import connexion
 
 from openapi_server import encoder
-    
+from flask_cors import CORS
 
 def main():
     app = connexion.App(__name__, specification_dir='./openapi/')
@@ -13,6 +13,7 @@ def main():
                 pythonic_params=True,
                 validate_responses=True)
 
+    CORS(app.app)
     app.run(port=8080)
 
 
