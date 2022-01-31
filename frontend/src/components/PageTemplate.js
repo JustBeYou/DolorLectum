@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 
 const useStyles = makeStyles({
   pageWrapper: {
-    height: '100vh',
+    minHeight: '100vh',
     backgroundColor: 'brown',
     display: 'flex',
     flexDirection: 'column',
