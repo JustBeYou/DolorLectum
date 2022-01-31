@@ -3,6 +3,7 @@
 import connexion
 import json
 from openapi_server import encoder
+from flask_cors import CORS
 
 import paho.mqtt.client as mqtt
 
@@ -45,8 +46,9 @@ def main():
     client.on_message = on_message
     client.connect_async('mqtt-server', 1883)
     client.loop_start()
+    
+    CORS(app.app)
     app.run(port=8080)
-
 
 if __name__ == '__main__':
     main()

@@ -5,6 +5,7 @@ import connexion
 import json
 from openapi_server import encoder
 import paho.mqtt.client as mqtt
+from flask_cors import CORS
 topic1="thermalsystem.temperature"
 topic2="thermalsystem.status.updates"
 client = mqtt.Client()
@@ -51,8 +52,9 @@ def create_app():
     with open("state", "w") as f:
         obj = {"ready": True, "temp": 24, "realtemp": 26}
         f.write(json.dumps(obj))
-    return app
 
+    CORS(app.app)
+    return app
 
 if __name__ == "__main__":
     main()
