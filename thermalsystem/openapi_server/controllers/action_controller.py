@@ -10,8 +10,7 @@ from openapi_server import util
 from threading import Thread
 import sys
 
-sys.path.append("../../")
-from __main__ import  push
+from ..__main__ import  push
 
 
 

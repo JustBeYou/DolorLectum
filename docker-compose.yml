@@ -36,7 +36,7 @@ services:
     build:
       context: ./lamp
     ports:
-      - 8084:8085
+      - 8084:8080
     networks:
       - dolorlectum
     depends_on:
