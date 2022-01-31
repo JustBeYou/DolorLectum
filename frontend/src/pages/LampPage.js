@@ -37,7 +37,7 @@ const useStyles = makeStyles({
     justifyContent: 'start',
     backgroundColor: '#ffffff00',
     padding: 20,
-    marginTop: 50,
+    marginTop: 20,
     marginBottom: 20,
     borderRadius: 20,
   },
@@ -152,6 +152,10 @@ const LampPage = () => {
   };
 
   const handleSubmit = () => {
+    if (data.power === lampStatus.FALSE) {
+      setError({ code: '400', message: "Can't change color when lamp is power off." });
+      return;
+    }
     POSTcolor({ red, green, blue });
   };
 
