@@ -45,7 +45,7 @@ def main():
     client.on_connect = on_connect
     client.on_message = on_message
     client.connect_async('mqtt-server', 1883)
-    client.loop_start()
+    #client.loop_start()
     
     CORS(app.app)
     app.run(port=8080)
