@@ -9,21 +9,9 @@ import ErrorComponent from '../components/ErrorComponent';
 
 import * as CONSTANTS from '../utils/constants';
 
-const mockData = {
-  status: { ready: true }, // boolean
-  position: { x: 0, y: 0, z: 0 },
-};
-
-const positions = {
-  X: 'x',
-  Y: 'y',
-  Z: 'z',
-};
-
 const useStyles = makeStyles({
   dataContainer: {
     width: '100%',
-    height: 100,
     display: 'flex',
     flexDirection: 'column',
     backgroundColor: 'white',
@@ -48,13 +36,6 @@ const useStyles = makeStyles({
 });
 
 const BUTTONS_OFFSET = 20;
-
-const seasons = {
-  SUMMER: 'summer',
-  WINTER: 'winter',
-  SPRING: 'spring',
-  AUTUMN: 'autumn',
-};
 
 const MovementPage = () => {
   const [data, setData] = useState({ status: { ready: false }, position: { x: 0, y: 0, z: 0 } });
