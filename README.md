@@ -89,6 +89,7 @@ PREVIOUS RESPONSE: 'HTTP/1.0 500 INTERNAL SERVER ERROR\r\nContent-Type: applicat
 ```
 
 6. Testele au coverage 80%+. (0.5p)
+
 ![coverage](https://user-images.githubusercontent.com/50520077/152057037-628c7f8d-cf48-488a-87b0-da838ca3ebd0.png)
 
 
