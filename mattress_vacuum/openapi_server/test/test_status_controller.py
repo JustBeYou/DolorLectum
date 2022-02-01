@@ -18,8 +18,7 @@ class TestStatusController(BaseTestCase):
 
         Get El status
         """
-        headers = { 
-        }
+        headers = {}
         response = self.client.open(
             '/status',
             method='GET',
@@ -32,19 +31,15 @@ class TestStatusController(BaseTestCase):
 
         Set El status
         """
-        status = {
-  "ready" : true
-}
-        headers = { 
-        }
+        status = {"ready": True}
+        headers = {}
         response = self.client.open(
             '/status',
             method='POST',
             headers=headers,
             data=json.dumps(status),
             content_type='application/json')
-        self.assert200(response,
-                       'Response body is : ' + response.data.decode('utf-8'))
+        self.assert200(response, 'Response body is : ' + response.data.decode('utf-8'))
 
 
 if __name__ == '__main__':

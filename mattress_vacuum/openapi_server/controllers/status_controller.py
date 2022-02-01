@@ -1,10 +1,12 @@
 import connexion
 import six
 
-from openapi_server.models.status import Status  # noqa: E501
-from openapi_server import util
+from ..models.status import Status  # noqa: E501
 
 curr_status = Status(ready=False)
+
+def get_current_status():
+    return curr_status
 
 def get_mattress_status():  # noqa: E501
     """Get El status
