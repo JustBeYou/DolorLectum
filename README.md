@@ -17,7 +17,53 @@ DolorLectum este livrat impreuna cu o interfata web ce usureaza interactionarea 
 
 In paragrafele de mai jos vor fi descrise functionalitatile dispozitivelor si cum pot fi acestea utilizate pentru o experienta de neuitat cu DolorLectum.
 
-**TODO**: n-am nici cea mai mica idee ce putem scrie aici. Banuiesc ca putem sa zicem ce stie sa faca fiecare dispozitiv si sa punem poze din frontend.
+#### 👉 Meniu
+
+Aveti la dispozitie un meniu prin care puteti selecta dispozitivul pe care doriti sa il controlati.
+
+![Menu](./docs/main.png)
+
+#### 👉 TV Movement
+
+Controlul pozitiei televizorului poate fi realizat cu usurinta prin intermediul interfetei, ajustand astfel dispozitivul dupa preferintele utilizatorului.
+
+![move](https://user-images.githubusercontent.com/50520077/152052892-5e7eba53-8ef3-48ce-b18f-bee4bad7996f.png)
+
+Dupa un anumit interval de timp televizorul revine la forma inactiva pentru a motiva utilizatorul sa isi inceapa ziua, conform cerintelor venite din partea clientilor.
+
+![err-move](https://user-images.githubusercontent.com/50520077/152053142-3f92893a-b46f-4819-aba8-d33b32eb993b.png)
+
+
+#### 👉 Lamp
+
+Lampa vine la pachet cu 3 moduri de functionare si o telecomanda prin care putem seta culorile acesteia.
+
+![lamp](https://user-images.githubusercontent.com/50520077/152053310-30903cc3-082c-445d-ad72-14ec8aa5eae5.png)
+
+
+#### 👉 Sound System
+
+Sistemul de sunet functioneaza pe baza unei cozi de melodii alese de utilizator. Acesta poate intrerupe sau porni oricand melodiile cu ajutorul interfetei.
+
+![sound-play](https://user-images.githubusercontent.com/50520077/152053684-b723f67a-749b-4b4a-8f62-bffc3d0d12ec.png)
+
+Tot acest sistem are la baza o colectie de melodii inregistrate de catre utilizator in memorie, pe baza carora isi poate crea propriul playlist.
+
+![sound-lists](https://user-images.githubusercontent.com/50520077/152053801-918a60b7-0c86-4dd1-901a-65a292bb885e.png)
+
+#### 👉 Thermo System
+
+Sistemul termic contribuile la calitatea somnului, iar pentru aceasta am integrat de asemenea un control digital.
+
+![thermo](https://user-images.githubusercontent.com/50520077/152053883-05e7bc16-c811-4190-8580-421a8d3d77dd.png)
+
+
+#### 👉 Vacuum Cleaner
+
+Aspiratorul vine la pachet cu controlul digital oferit de catre echipa noastra de dezvoltare.
+
+![vacuum](https://user-images.githubusercontent.com/50520077/152054014-f97d5701-20aa-4b9c-b885-3e05a20cb569.png)
+
 
 ## Criterii de notare
 
