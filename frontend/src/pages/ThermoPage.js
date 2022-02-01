@@ -122,7 +122,7 @@ const ThermoPage = () => {
   };
 
   return (
-    <PageServiceTemplate title="TV Movement">
+    <PageServiceTemplate title="Thermo System">
       <Box className={styles.dataContainer}>
         <Typography variant="h6">{JSON.stringify(data, null, 2)}</Typography>
         {error && <ErrorComponent error={error} />}
