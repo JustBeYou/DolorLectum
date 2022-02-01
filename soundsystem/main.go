@@ -14,6 +14,7 @@ func main() {
 	c, _ := handlers.NewContainer()
 
 	// Middleware
+	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 

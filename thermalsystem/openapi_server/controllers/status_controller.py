@@ -3,6 +3,10 @@ import six
 from openapi_server.models.status import Status  # noqa: E501
 from openapi_server import util
 import json
+import sys
+
+
+from ..__main__ import push
 
 
 def get_thermal_status():  # noqa: E501
@@ -28,11 +32,11 @@ def set_thermal_status(status=None):  # noqa: E501
         status = Status.from_dict(connexion.request.get_json())  # noqa: E501
     with open("state") as f:
         obj = json.loads(f.readline())
-
     with open("state", "w") as f:
         obj["ready"] = status.ready
         f.write(json.dumps(obj))
-        return json.dumps(obj)
+        push(obj)
+        return obj
 
 
 def set_temperature(status=None):  # noqa: E501
@@ -52,4 +56,5 @@ def set_temperature(status=None):  # noqa: E501
     with open("state", "w") as f:
         obj["temp"] = round(status.temp, 2)
         f.write(json.dumps(obj))
-        return json.dumps(obj)
+        push(obj)
+        return obj

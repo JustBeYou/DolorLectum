@@ -1,0 +1,74 @@
+asyncapi: '2.2.0'
+info:
+  title: lamp AsyncAPI
+  version: '1.0.0'
+
+servers:
+  test:
+    url: localhost:8099
+    protocol: mqtt
+    bindings:
+      $ref: '#/components/operationTraits/mqtt'
+
+defaultContentType: application/json
+
+channels:
+  lamp.status.updates:
+    publish:
+      summary: The status updates of the sound system are published here.
+      operationId: publishStatusUpdate
+      message:
+        $ref: '#/components/messages/statusUpdate'
+
+  lamp.colors.queue:
+    subscribe:
+      summary: Get color requests .
+      operationId: subscribeNewColorsInQueue
+      message:
+        $ref: '#/components/messages/requestColor'
+
+components:
+  messages:
+    statusUpdate:
+      payload:
+        $ref: '#/components/schemas/status'
+
+    requestColor:
+      payload:
+        type: object
+        required:
+          - id
+        properties:
+          id:
+            type: string
+            format: uuid  
+        example:
+          id: 123e4567-e89b-12d3-a456-426614174000
+
+  schemas:
+    Status:
+      example:
+        status : full_power
+        red : 255
+        green : 255
+        blue : 255
+      properties:
+        power:
+          enum:
+          - full_power
+          - normal_power
+          - power_saving
+          - off
+          title: power
+          type: string
+        red:
+          title: red
+          type: number
+        green:
+          title: green
+          type: number
+        blue:
+          title: blue
+          type: number
+      title: Status
+      type: object
