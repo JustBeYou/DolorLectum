@@ -1,0 +1,45 @@
+﻿asyncapi: '2.2.0'
+info:
+  title: Mattress vacuum AsyncAPI
+  version: '1.0.0'
+
+servers:
+  test:
+    url: localhost:8092
+    protocol: mqtt
+    bindings:
+      $ref: '#/components/operationTraits/mqtt'
+
+defaultContentType: application/json
+
+channels:
+  mattress_vacuum.state:
+    publish:
+      summary: The state updates of the mattress are published here.
+      operationId: publish
+      message:
+        $ref: '#/components/messages/state'
+
+components:
+  messages:
+    statusUpdate:
+      payload:
+        $ref: '#/components/schemas/state'
+        
+    state:
+      type: dict
+      properties:
+        curr_status:
+          type: bool
+        last_action:
+          type: string
+        
+      example: 
+        curr_status: { 'ready' : true}
+        last_action : canceled
+
+  operationTraits:
+    mqtt:
+      bindings:
+        mqtt:
+          clientId: mattress_vacuum

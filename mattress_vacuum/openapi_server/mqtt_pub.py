@@ -12,7 +12,7 @@ broker = 'localhost'
 port = 1883
 topic = "mattress_vacuum.state"
 # generate client ID with pub prefix randomly
-client_id = f'python-mqtt-{random.randint(0, 1000)}'
+client_id = f'mattress_vacuum'
 
 
 def connect_mqtt():
