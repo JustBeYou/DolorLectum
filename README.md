@@ -92,6 +92,7 @@ PREVIOUS RESPONSE: 'HTTP/1.0 500 INTERNAL SERVER ERROR\r\nContent-Type: applicat
 
 ![coverage](https://user-images.githubusercontent.com/50520077/152057037-628c7f8d-cf48-488a-87b0-da838ca3ebd0.png)
 
+![coverage2](https://user-images.githubusercontent.com/10727813/152120864-1a06f6a2-559e-45c4-83ea-7ec3fb10acb5.png)
 
 7. Exista teste de integrare si teste end2end. (1.5p)
 
